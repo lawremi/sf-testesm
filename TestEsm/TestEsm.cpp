@@ -1278,7 +1278,7 @@ void DumpPlanets(CEspFile& espFile, const string Filename)
 	if (!File.Open(Filename, "wt")) return;
 
 	File.Printf("FormID,EditorID,Name,ANAM,Density,Temperature,Model,Fnam, Fnam1, Mass, Radius, Gravity, Fnam5, Dnam1, Dnam2, Enam1, Enam2, Aphelion, Eccentricity, Enam6, MeanOrbit, Enam7, Enam8, Enam9, Enam10, Enam11, Enam12, Gravity1, StarId, StarName, Primary, PlanetId, Orbits, ");
-	File.Printf("Hnam1,Class,Gliese,Life,MagField,Mass1,Type,System,Special, Perihelion, StarDistance, Density1, Heat, HydroPct, Hnam6, Hnam7, PeriAngle, Hnam8, StartAngle, Year, Asteroids, Hnam10, Seed, Hnam11\n");
+	File.Printf("Hnam1,Class,Gliese,Life,MagField,Mass1,Type,System,Special, Perihelion, StarDistance, Density1, Heat, HydroPct, Hnam6, Hnam7, PeriAngle, Hnam8, StartAngle, Year, Asteroids, Hnam10, Seed, Hnam11, Kwda\n");
 
 	for (auto i : pRecords->GetRecords())
 	{
@@ -1390,6 +1390,22 @@ void DumpPlanets(CEspFile& espFile, const string Filename)
 		{
 			File.Printf(",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"");
 			File.Printf(",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"");
+		}
+
+		auto pKwda = pRecord->FindSubrecord<CKwdaSubrecord>(NAME_KWDA);
+
+		if (pKwda) {
+			auto data = pKwda->GetKwdaData();
+			auto len = pKwda->GetKwdaDataLength();
+			File.Printf(",");
+			for (int i = 0; i < len; i++) {
+				File.Printf("0x%x", data[i]);
+				if (i + 1 < len) {
+					File.Printf(":");
+				}
+			}
+		} else {
+			File.Printf(",\"\"");
 		}
 
 		File.Printf("\n");
@@ -2589,7 +2605,7 @@ int main()
 	//espFile.Load("C:\\Downloads\\Starfield\\BlueprintShips-Starfield.esm");
 	//espFile.OutputStats("BlueprintShips-Starfield_Stats.txt");
 
-	espFile.Load("C:\\Downloads\\Starfield\\Starfield.esm");
+	espFile.Load("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Starfield\\Data\\Starfield.esm");
 	//espFile.OutputStats("Starfield_Stats.txt");
 
 	//DumpStructure(espFile, "Structure.txt");
@@ -2623,7 +2639,7 @@ int main()
 	//DumpSunPresets(espFile, "SunPresets.csv");
 
 	//DumpStars(espFile, "Stars.csv");
-	//DumpPlanets(espFile, "Planets.csv");
+	DumpPlanets(espFile, "Planets.csv");
 	//espFile.SaveRaw("Planets.esm", NAME_PNDT);
 
 	//DumpQuests(espFile, "Quests.csv");
@@ -2640,7 +2656,7 @@ int main()
 	//DumpGbfm(espFile, "Gbfm.csv");
 	//DumpFlst(espFile, "Flst.csv");
 
-	DumpDialogue(espFile, "Dialogue.csv");
+	//DumpDialogue(espFile, "Dialogue.csv");
 
 	//DumpTerm(espFile, "Term.csv");
 	//DumpTmlm(espFile, "Tmlm.csv");

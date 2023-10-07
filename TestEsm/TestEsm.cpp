@@ -1296,6 +1296,8 @@ void DumpPlanets(CEspFile& espFile, const string Filename)
 		}
 	}
 
+	auto pKywdRecords = espFile.GetTypeGroup(NAME_KYWD);
+
 	for (auto i : pRecords->GetRecords())
 	{
 		auto pRecord = dynamic_cast<CPndtRecord *>(i);
@@ -1399,7 +1401,13 @@ void DumpPlanets(CEspFile& espFile, const string Filename)
 			auto len = pKwda->GetKwdaDataLength();
 			File.Printf(",");
 			for (int i = 0; i < len; i++) {
-				File.Printf("0x%x", data[i]);
+				auto pKywdBaseRecord = espFile.FindFormId(data[i]);
+				if (pKywdBaseRecord	== nullptr) continue;
+				auto pKywdRecord = dynamic_cast<CRecord *>(pKywdBaseRecord);
+				if (pKywdRecord == nullptr) continue;
+				auto pEdidRecord = pKywdRecord->FindSubrecord<CStringSubrecord>(NAME_EDID);
+				if (pEdidRecord == nullptr) continue;
+				File.Printf("%s", pEdidRecord->GetCString());
 				if (i + 1 < len) {
 					File.Printf(":");
 				}
